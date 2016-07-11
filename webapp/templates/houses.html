@@ -1,0 +1,7 @@
+<h1>Houses</h1>
+
+<ul>
+	{% for house in data %}
+	<li><a href="{{ url_for('house', id = house['id']) }}">{{ house['label'] }}</a></li>
+	{% endfor %}
+</ul>
