@@ -11,6 +11,10 @@ def hello():
     return 'Hello '+provider+'!'
 print(socket.gethostname())
 
+@app.route('/houses')
+def houses():
+	return 'hello houses!'
+
 if __name__ == '__main__':
     # Bind to PORT if defined, otherwise default to 5000.
     port = int(os.environ.get('PORT', 5000))
