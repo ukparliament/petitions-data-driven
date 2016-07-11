@@ -1,4 +1,4 @@
-NAME = ukpds/python-hello-world
+NAME = ukpds/petitions-data-driven
 
 # GO_PIPELINE_COUNTER is the pipeline number, passed from our build agent.
 GO_PIPELINE_COUNTER?="unknown"
