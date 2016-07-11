@@ -2,8 +2,6 @@ version: '2'
 services:
   web:
     image: ${IMAGE_NAME}
-    volumes:
-       - "web-data:/var/www/html"
     ports:
       - "5000"
     networks:
