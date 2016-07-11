@@ -15,7 +15,3 @@ services:
 networks:
   ci:
     external: true
-
-volumes:
-    web-data:
-      driver: local
