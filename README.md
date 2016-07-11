@@ -1,2 +1,2 @@
 # python-helloworld
-Repository for a python app 
+Basic hello world app built using Python.

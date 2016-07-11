@@ -1,0 +1,21 @@
+version: '2'
+services:
+  web:
+    image: ${IMAGE_NAME}
+    volumes:
+       - "web-data:/var/www/html"
+    ports:
+      - "5000"
+    networks:
+       - ci
+    labels:
+      - "traefik.backend=python-example"
+      - "traefik.frontend.rule=Host:python.ci.ukpds.org"
+
+networks:
+  ci:
+    external: true
+
+volumes:
+    web-data:
+      driver: local
