@@ -9,8 +9,8 @@ services:
     networks:
        - ci
     labels:
-      - "traefik.backend=python-example"
-      - "traefik.frontend.rule=Host:python.ci.ukpds.org"
+      - "traefik.backend=petitions-data-driven"
+      - "traefik.frontend.rule=Host:petitions-data-driven.ci.ukpds.org"
 
 networks:
   ci:

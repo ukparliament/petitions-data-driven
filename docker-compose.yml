@@ -17,5 +17,5 @@ services:
     ports:
       - "5000"
     labels:
-      - "traefik.backend=python"
-      - "traefik.frontend.rule=Host:python.docker.localhost"
+      - "traefik.backend=petitions-data-driven"
+      - "traefik.frontend.rule=Host:petitions-data-driven.docker.localhost"
