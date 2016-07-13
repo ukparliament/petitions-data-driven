@@ -5,7 +5,6 @@ import json
 
 from flask import Flask
 from flask import render_template
-
 from datetime import datetime
 
 app = Flask(__name__)
@@ -24,12 +23,16 @@ def petitions():
 def petition(id):
 	return render_template("petitions/show.html", data = __get_json_data("/petitions/{0}.json".format(id)))
 
-@app.route('/constituency/<id>')
+@app.route('/constituencies')
+def constituencies():
+	return render_template("constituencies/index.html", data = __get_json_data('/constituencies.json'))
+
+@app.route('/constituencies/<id>')
 def constituency(id):
-	return "constituency"
+	return render_template("constituencies/show.html", data = __get_json_data("/constituencies/{0}.json".format(id)))
 
 def __get_json_data(url):
-	conn = httplib.HTTPConnection("data-driven.ci.ukpds.org")
+	conn = httplib.HTTPConnection("ukpds-data-driven.herokuapp.com")
 	try:
 		conn.request("GET", url)
 		response = conn.getresponse()
