@@ -18,33 +18,26 @@ print(socket.gethostname())
 
 @app.route('/petitions')
 def petitions():
-	conn = httplib.HTTPConnection("data-driven.ci.ukpds.org")
-	try:
-		conn.request("GET", "/petitions.json")
-		response = conn.getresponse()
-		repsonse_body = response.read()
-	finally:
-		conn.close()
-
-	data = json.loads(repsonse_body)
-	return render_template("petitions/index.html", data = data)
+	return render_template("petitions/index.html", data = __get_json_data('/petitions.json'))
 
 @app.route('/petitions/<id>')
 def petition(id):
-	conn = httplib.HTTPConnection("data-driven.ci.ukpds.org")
-	try:
-		conn.request("GET", "/petitions/{0}.json".format(id))
-		response = conn.getresponse()
-		repsonse_body = response.read()
-	finally:
-		conn.close()
-
-	data = json.loads(repsonse_body)
-	return render_template("petitions/show.html", data = data)
+	return render_template("petitions/show.html", data = __get_json_data("/petitions/{0}.json".format(id)))
 
 @app.route('/constituency/<id>')
 def constituency(id):
 	return "constituency"
+
+def __get_json_data(url):
+	conn = httplib.HTTPConnection("data-driven.ci.ukpds.org")
+	try:
+		conn.request("GET", url)
+		response = conn.getresponse()
+		repsonse_body = response.read()
+	finally:
+		conn.close()
+
+	return json.loads(repsonse_body)
 
 if __name__ == '__main__':
     # Bind to PORT if defined, otherwise default to 5000.
