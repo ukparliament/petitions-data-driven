@@ -1,0 +1,7 @@
+<h1>Petitions</h1>
+
+<ul>
+	{% for petition in data %}
+	<li><a href="{{ url_for('petition', id = petition['id']) }}">{{ petition["title"] }}</a></li>
+	{% endfor %}
+</ul>

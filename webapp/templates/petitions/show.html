@@ -1,0 +1,32 @@
+<h1>Petition details</h1>
+
+<dl>
+	<dt>Title</dt>
+	<dd>{{ data["title"] }}</dd>
+
+	<dt>Summary</dt>
+	<dd>{{ data["summary"] }}</dd>
+
+	<dt>Status</dt>
+	<dd>{{ data["status"] }}</dd>
+
+	<dt>Created</dt>
+	<dd>{{ data["created"] }}</dd>
+
+	<dt>Updated</dt>
+	<dd>{{ data["updated"] }}</dd>
+
+	<dt>Link</dt>
+	<dd><a href="{{ data['external_url'] }}">{{ data['external_url'] }}</a></dd>
+
+	<dt>Constituencies</dt>
+	<dd>
+		<ul>
+			{% for constituency in data["constituencies"] %}
+			<li><a href="{{ url_for('constituency', id = constituency['id']) }}">{{ constituency["constituency_label"] }} ({{ constituency["number_of_signatures"] }})</a></li>
+			{% endfor %}
+		</ul>
+	</dd>
+
+
+</dl>
