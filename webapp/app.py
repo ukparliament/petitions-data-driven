@@ -6,6 +6,8 @@ import json
 from flask import Flask
 from flask import render_template
 
+from datetime import datetime
+
 app = Flask(__name__)
 
 @app.route('/')
@@ -14,22 +16,28 @@ def hello():
     return 'Hello '+provider+'!'
 print(socket.gethostname())
 
-@app.route('/houses')
-def houses():
+@app.route('/petitions')
+def petitions():
+	return render_template("petitions/index.html", data = __get_json_data('/petitions.json'))
+
+@app.route('/petitions/<id>')
+def petition(id):
+	return render_template("petitions/show.html", data = __get_json_data("/petitions/{0}.json".format(id)))
+
+@app.route('/constituency/<id>')
+def constituency(id):
+	return "constituency"
+
+def __get_json_data(url):
 	conn = httplib.HTTPConnection("data-driven.ci.ukpds.org")
 	try:
-		conn.request("GET", "/houses.json")
+		conn.request("GET", url)
 		response = conn.getresponse()
-		responsebody = response.read()
+		repsonse_body = response.read()
 	finally:
 		conn.close()
 
-	data = json.loads(responsebody)
-	return render_template('houses.html', data=data)
-
-@app.route('/houses/<id>')
-def house(id):
-	return id
+	return json.loads(repsonse_body)
 
 if __name__ == '__main__':
     # Bind to PORT if defined, otherwise default to 5000.
