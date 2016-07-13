@@ -27,9 +27,9 @@ def petition(id):
 def constituencies():
 	return render_template("constituencies/index.html", data = __get_json_data('/constituencies.json'))
 
-@app.route('/constituency/<id>')
+@app.route('/constituencies/<id>')
 def constituency(id):
-	return "constituency"
+	return render_template("constituencies/show.html", data = __get_json_data("/constituencies/{0}.json".format(id)))
 
 def __get_json_data(url):
 	conn = httplib.HTTPConnection("ukpds-data-driven.herokuapp.com")
