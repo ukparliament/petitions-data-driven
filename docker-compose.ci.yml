@@ -5,7 +5,7 @@ services:
     ports:
       - "5000"
     networks:
-       - ci
+      - ci
     labels:
       - "traefik.backend=petitions-data-driven"
       - "traefik.frontend.rule=Host:petitions-data-driven.ci.ukpds.org"

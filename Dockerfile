@@ -7,4 +7,3 @@ RUN pip install -qr /tmp/requirements.txt
 ADD ./webapp /opt/webapp/
 WORKDIR /opt/webapp
 CMD ["python", "app.py"]
-
