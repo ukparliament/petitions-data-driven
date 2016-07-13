@@ -1,3 +1,17 @@
 <h1>{{ data['label'] }}</h1>
 
-<p>MP {{ data['member']['name'] }}</p>
+<dl>
+	<dt>Member</dt>
+	<dd>{{ data['member']['name'] }}</dd>
+
+	<dt>Petitions</dt>
+	<dd>
+		<ul>
+			{% for petition in data["petitions"] %}
+			<li><a href="{{ url_for('petition', id = petition['id']) }}">{{ petition["title"] }} ({{ petition["number_of_signatures"] }})</a></li>
+			{% endfor %}
+		</ul>
+	</dd>
+
+
+</dl>
