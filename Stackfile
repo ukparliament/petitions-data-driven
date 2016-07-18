@@ -1,0 +1,12 @@
+lb:
+  image: 'dockercloud/haproxy:latest'
+  links:
+    - web
+  ports:
+    - '80:80'
+  volumes:
+    - '/var/run/docker.sock:/var/run/docker.sock'
+web:
+  image: 'ukparliament/petitions-data-driven'
+  ports:
+    - '5000'
