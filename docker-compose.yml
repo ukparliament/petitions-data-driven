@@ -19,3 +19,5 @@ services:
     labels:
       - "traefik.backend=petitions-data-driven"
       - "traefik.frontend.rule=Host:petitions-data-driven.docker.localhost"
+    environment:
+      API_ENDPOINT: http://example.com/

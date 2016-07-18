@@ -2,6 +2,7 @@ import os
 import socket
 import httplib
 import json
+import urllib2
 
 from flask import Flask
 from flask import render_template
@@ -30,6 +31,25 @@ def constituencies():
 @app.route('/constituencies/<id>')
 def constituency(id):
 	return render_template("constituencies/show.html", data = __get_json_data("/constituencies/{0}.json".format(id)))
+
+@app.route('/health')
+def health():
+	url = os.environ['API_ENDPOINT']
+	if not url:
+		return 'URL not configured', 500
+	else:
+		try:
+			resp = urllib2.urlopen(url)
+			try:
+				code = resp.getcode()
+				if code < 400:
+					return 'OK', 200
+				else:
+					return 'Could not ping endpoint ' + url, 500
+			finally:
+				resp.close()
+		except Exception, ex:
+			return 'Could not ping endpoint ' + url + os.linesep + ex.__repr__(), 500
 
 def __get_json_data(url):
 	conn = httplib.HTTPConnection("ukpds-data-driven.herokuapp.com")
