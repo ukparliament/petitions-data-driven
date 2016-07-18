@@ -24,15 +24,18 @@ def endpoint_available():
 	if not url:
 		return False, "URL not configured"
 	else:
-		resp = urllib2.urlopen(url)
 		try:
-			code = resp.getcode()
-			if code < 400:
-				return True, "Endpoint available"
-			else:
-				return False, 'Endpoint returned a status code ' + code
-		finally:
-			resp.close()
+			resp = urllib2.urlopen(url)
+			try:
+				code = resp.getcode()
+				if code < 400:
+					return True, "Endpoint available: " + url
+				else:
+					return False, "Endpoint " + url + " returned a status code " + code
+			finally:
+				resp.close()
+		except Exception, ex:
+			return False, "Endpoint " + url + " threw an exception: " + ex.__repr__()
 
 health.add_check(endpoint_available)
 
