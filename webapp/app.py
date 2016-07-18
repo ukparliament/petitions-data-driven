@@ -7,8 +7,45 @@ import urllib2
 from flask import Flask
 from flask import render_template
 from datetime import datetime
+from healthcheck import HealthCheck, EnvironmentDump
 
 app = Flask(__name__)
+
+
+# ====== Health checks ====== #
+
+health = HealthCheck(app, "/healthcheck")
+envdump = EnvironmentDump(app, "/environment",
+	include_python=False, include_os=False,
+	include_process=False, include_config=False)
+
+def endpoint_available():
+	url = os.environ['API_ENDPOINT']
+	if not url:
+		return False, "URL not configured"
+	else:
+		resp = urllib2.urlopen(url)
+		try:
+			code = resp.getcode()
+			if code < 400:
+				return True, "Endpoint available"
+			else:
+				return False, 'Endpoint returned a status code ' + code
+		finally:
+			resp.close()
+
+health.add_check(endpoint_available)
+
+# add your own data to the environment dump
+def application_data():
+    return {
+		"maintainer": "Parliamentary Digital Service",
+		"git_repo": "https://github.com/ukpds/petitions-data-driven"
+	}
+
+envdump.add_section("application", application_data)
+
+# ====== Routes ====== #
 
 @app.route('/')
 def hello():
@@ -31,25 +68,6 @@ def constituencies():
 @app.route('/constituencies/<id>')
 def constituency(id):
 	return render_template("constituencies/show.html", data = __get_json_data("/constituencies/{0}.json".format(id)))
-
-@app.route('/health')
-def health():
-	url = os.environ['API_ENDPOINT']
-	if not url:
-		return 'URL not configured', 500
-	else:
-		try:
-			resp = urllib2.urlopen(url)
-			try:
-				code = resp.getcode()
-				if code < 400:
-					return 'OK', 200
-				else:
-					return 'Could not ping endpoint ' + url, 500
-			finally:
-				resp.close()
-		except Exception, ex:
-			return 'Could not ping endpoint ' + url + os.linesep + ex.__repr__(), 500
 
 def __get_json_data(url):
 	conn = httplib.HTTPConnection("ukpds-data-driven.herokuapp.com")
