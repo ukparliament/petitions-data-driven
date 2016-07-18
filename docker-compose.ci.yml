@@ -11,7 +11,6 @@ services:
       - "traefik.frontend.rule=Host:petitions-data-driven.ci.ukpds.org"
     environment:
       DATADRIVEN_ENDPOINT: data-driven.ci.ukpds.org
-      SERVICE_CHECK_SCRIPT: curl --silent http://$$SERVICE_IP:$$SERVICE_PORT/healthcheck | grep Working
 
 networks:
   ci:
