@@ -10,6 +10,7 @@ from datetime import datetime
 from healthcheck import HealthCheck, EnvironmentDump
 
 app = Flask(__name__)
+datadriven_endpoint = os.environ["DATADRIVEN_ENDPOINT"]
 
 
 # ====== Health checks ====== #
@@ -19,25 +20,25 @@ envdump = EnvironmentDump(app, "/environment",
 	include_python=False, include_os=False,
 	include_process=False, include_config=False)
 
-def endpoint_available():
-	url = os.environ['API_ENDPOINT']
-	if not url:
-		return False, "URL not configured"
-	else:
-		try:
-			resp = urllib2.urlopen(url)
-			try:
-				code = resp.getcode()
-				if code < 400:
-					return True, "Endpoint available: " + url
-				else:
-					return False, "Endpoint " + url + " returned a status code " + code
-			finally:
-				resp.close()
-		except Exception, ex:
-			return False, "Endpoint " + url + " threw an exception: " + ex.__repr__()
+def datadriven_endpoint_available():
+	if not datadriven_endpoint:
+		return False, "Data driven endpoint has not been configured"
 
-health.add_check(endpoint_available)
+	url = "http://" + datadriven_endpoint + "/"
+	try:
+		resp = urllib2.urlopen(url)
+		try:
+			code = resp.getcode()
+			if code < 400:
+				return True, "Endpoint available: " + url
+			else:
+				return False, "Endpoint " + url + " returned a status code " + code
+		finally:
+			resp.close()
+	except Exception, ex:
+		return False, "Endpoint " + url + " threw an exception: " + ex.__repr__()
+
+health.add_check(datadriven_endpoint_available)
 
 # add your own data to the environment dump
 def application_data():
@@ -73,7 +74,7 @@ def constituency(id):
 	return render_template("constituencies/show.html", data = __get_json_data("/constituencies/{0}.json".format(id)))
 
 def __get_json_data(url):
-	conn = httplib.HTTPConnection("ukpds-data-driven.herokuapp.com")
+	conn = httplib.HTTPConnection(datadriven_endpoint)
 	try:
 		conn.request("GET", url)
 		response = conn.getresponse()
