@@ -11,10 +11,10 @@ services:
       - "traefik.frontend.rule=Host:petitions-data-driven.ci.ukpds.org"
     environment:
       DATADRIVEN_ENDPOINT: data-driven.ci.ukpds.org
-      SERVICE_5000_CHECK_NAME: petitions-data-driven
-      SERVICE_5000_CHECK_HTTP: /healthcheck
-      SERVICE_5000_CHECK_INTERVAL: 15s
-      SERVICE_5000_CHECK_TIMEOUT: 1s
+      SERVICE_CHECK_NAME: petitions-data-driven
+      SERVICE_CHECK_HTTP: /healthcheck
+      SERVICE_CHECK_INTERVAL: 15s
+      SERVICE_CHECK_TIMEOUT: 1s
 
 networks:
   ci:
