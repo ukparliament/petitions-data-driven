@@ -1,1 +1,0 @@
-web: gunicorn --pythonpath webapp app.py
