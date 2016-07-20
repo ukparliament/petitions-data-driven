@@ -1,7 +1,7 @@
 <h1>Constituencies</h1>
 
 <ul>
-	{% for constituency in data['constituencies'] %}
+	{% for constituency in data %}
 	<li><a href="{{ url_for('constituency', id = constituency['id']) }}">{{ constituency["constituency_label"] }}</a></li>
 	{% endfor %}
 </ul>
