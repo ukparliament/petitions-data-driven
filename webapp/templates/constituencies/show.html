@@ -1,8 +1,14 @@
 <h1>{{ data['label'] }}</h1>
 
 <dl>
-	<dt>Member</dt>
-	<dd>{{ data['member']['name'] }}</dd>
+	<dt>Members</dt>
+	<dd>
+		<ul>
+			{% for member in data['members'] %}
+			<li><a href="http://{{ endpoint }}/people/{{ member['id'] }}">{{ member['name'] }}</a></li>
+			{% endfor %}
+		</ul>
+	</dd>
 
 	<dt>Petitions</dt>
 	<dd>
