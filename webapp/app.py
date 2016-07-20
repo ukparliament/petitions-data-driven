@@ -71,7 +71,7 @@ def constituencies():
 
 @app.route('/constituencies/<id>')
 def constituency(id):
-	return render_template("constituencies/show.html", data = __get_json_data("/constituencies/{0}.json".format(id)))
+	return render_template("constituencies/show.html", data = __get_json_data("/constituencies/{0}.json".format(id)), endpoint = datadriven_endpoint)
 
 def __get_json_data(url):
 	conn = httplib.HTTPConnection(datadriven_endpoint)
