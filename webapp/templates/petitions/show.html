@@ -21,6 +21,17 @@
 	<dt>Link</dt>
 	<dd><a href="{{ data['external_url'] }}">{{ data['external_url'] }}</a></dd>
 
+	<dt>Concepts</dt>
+	<dd>
+		<ul>
+			{% for concept in data["concepts"] %}
+				<li>
+					{{ concept["label"] }}
+				</li>
+			{% endfor %}
+		</ul>
+	</dd>
+
 	<dt>Constituencies</dt>
 	<dd>
 		<ul>
