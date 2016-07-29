@@ -73,9 +73,20 @@ def petition_edit(id):
 @app.route('/petitions/update/<id>', methods = ['POST'])
 def petition_update(id):
 	subject_uri = __resource_uri(id)
-	object_id = request.form.get('add_concepts')
-	object_uri = __resource_uri(object_id)
-	queryStringUpload = "insert {<%s> <http://purl.org/dc/terms/subject> <%s>} WHERE { }" % (subject_uri, object_uri)
+
+	if request.form.get('update') == 'add':
+		object_id = request.form.get('add_concepts')
+		object_uri = __resource_uri(object_id)
+		queryStringUpload = "insert {<%s> <http://purl.org/dc/terms/subject> <%s>} WHERE { }" % (subject_uri, object_uri)
+
+	if request.form.get('update') == 'remove':
+		concepts = request.form.getlist('remove_concepts')
+		delete_statements = [ "<%s> <http://purl.org/dc/terms/subject> <%s> . " % (subject_uri, __resource_uri(concept_id)) for concept_id in concepts]
+		# for concept in concepts:
+		# 	queryStringUpload = queryStringUpload + "<%s> <http://purl.org/dc/terms/subject> <%s>" % (subject_uri, object_uri)
+		# queryStringUpload = "delete {<%s> <http://purl.org/dc/terms/subject> <%s>} WHERE { }" % (subject_uri, object_uri)
+		queryStringUpload = "delete {" + "".join(delete_statements) + "} WHERE { }"
+
 	sparql = SPARQLWrapper("http://graphdbtest.eastus.cloudapp.azure.com/repositories/DataDriven06/statements")
 	sparql.setQuery(queryStringUpload)
 	sparql.method = 'POST'

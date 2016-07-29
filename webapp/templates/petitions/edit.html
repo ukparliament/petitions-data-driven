@@ -11,16 +11,16 @@
 			<option value="{{ concept['id'] }}">{{ concept["label"] }}</option>
 		{% endfor %}
 	</select>
-	<button name="add">Add</button>
+	<button name="update" value="add">Add</button>
 	<ul>
 		{% for concept in petition_data['concepts']%}
 			<li>
 				<label for="{{ concept['id'] }}">{{ concept['label'] }}</label>
-				<input name="remove_concepts[]" type="checkbox" value="{{ concept['id'] }}">
+				<input id="{{ concept['id'] }}" name="remove_concepts" type="checkbox" value="{{ concept['id'] }}">
 			</li>	
 		{% endfor %}
 	</ul>
-	<button name="remove">Remove</button>
+	<button name="update" value="remove">Remove</button>
 	
 
 </form>
