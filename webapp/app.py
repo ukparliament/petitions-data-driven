@@ -4,14 +4,14 @@ import httplib
 import json
 import urllib2
 
-from flask import Flask, render_template, redirect, url_for
+from flask import Flask, render_template, redirect, url_for, request
 from datetime import datetime
 from healthcheck import HealthCheck, EnvironmentDump
 from SPARQLWrapper import SPARQLWrapper, JSON
 
 app = Flask(__name__)
 # datadriven_endpoint = os.environ["DATADRIVEN_ENDPOINT"]
-datadriven_endpoint = "data-driven.ci.ukpds.org"
+datadriven_endpoint = "ukpds-data-driven.herokuapp.com"
 
 
 # ====== Health checks ====== #
@@ -72,7 +72,10 @@ def petition_edit(id):
 
 @app.route('/petitions/update/<id>', methods = ['POST'])
 def petition_update(id):
-	queryStringUpload = "insert {<http://id.ukpds.org/23a6596b-bc6c-4577-a9d7-0670fcdfe180> <http://purl.org/dc/terms/subject> <http://id.ukpds.org/00091072-0000-0000-0000-000000000002>} WHERE { }"
+	subject_uri = __resource_uri(id)
+	object_id = request.form.get('add_concepts')
+	object_uri = __resource_uri(object_id)
+	queryStringUpload = "insert {<%s> <http://purl.org/dc/terms/subject> <%s>} WHERE { }" % (subject_uri, object_uri)
 	sparql = SPARQLWrapper("http://graphdbtest.eastus.cloudapp.azure.com/repositories/DataDriven06/statements")
 	sparql.setQuery(queryStringUpload)
 	sparql.method = 'POST'
@@ -97,6 +100,9 @@ def __get_json_data(url):
 		conn.close()
 
 	return json.loads(repsonse_body)
+
+def __resource_uri(id):
+	return "http://id.ukpds.org/{0}".format(id)
 
 if __name__ == '__main__':
     # Bind to PORT if defined, otherwise default to 5000.
