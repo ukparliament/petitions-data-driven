@@ -77,12 +77,15 @@ def petition_update(id):
 	if request.form.get('update') == 'add':
 		object_id = request.form.get('add_concepts')
 		object_uri = __resource_uri(object_id)
-		queryStringUpload = "insert {<%s> <http://purl.org/dc/terms/subject> <%s>} WHERE { }" % (subject_uri, object_uri)
+		queryStringUpload = index_status_string + "insert {<%s> <http://purl.org/dc/terms/subject> <%s>} WHERE { }" % (subject_uri, object_uri)
 
 	if request.form.get('update') == 'remove':
 		concepts = request.form.getlist('remove_concepts')
 		delete_statements = [ "<%s> <http://purl.org/dc/terms/subject> <%s> . " % (subject_uri, __resource_uri(concept_id)) for concept_id in concepts]
-		queryStringUpload = "delete {" + "".join(delete_statements) + "} WHERE { }"
+		queryStringUpload = index_status_string + "delete {" + "".join(delete_statements) + "} WHERE { }"
+
+	if request.form.get('update') == 'index':
+		queryStringUpload = __update_index_status(request.form.get('index-checkbox'), subject_uri)
 
 	sparql = SPARQLWrapper("http://graphdbtest.eastus.cloudapp.azure.com/repositories/DataDriven06/statements")
 	sparql.setQuery(queryStringUpload)
@@ -97,6 +100,12 @@ def constituencies():
 @app.route('/constituencies/<id>')
 def constituency(id):
 	return render_template("constituencies/show.html", data = __get_json_data("/constituencies/{0}.json".format(id)), endpoint = datadriven_endpoint)
+
+def __update_index_status(checkbox_status, subject_uri):
+	if checkbox_status == 'indexed':
+		return "insert {<%s> <http://data.parliament.uk/schema/parl#indexed> 'indexed'} WHERE { } " % (subject_uri)
+	else:
+		return "delete {<%s> <http://data.parliament.uk/schema/parl#indexed> 'indexed'} WHERE { } " % (subject_uri)
 
 def __get_json_data(url):
 	conn = httplib.HTTPConnection(datadriven_endpoint)

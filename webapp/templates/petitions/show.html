@@ -1,3 +1,6 @@
+{% extends "layout.html" %}
+{% block body %}
+
 <h1>Petition details</h1>
 
 <h3><a href="{{ url_for('petition_edit', id = data['id']) }}">Edit</a></h3>
@@ -11,7 +14,7 @@
 	
 	{% if data['index_label'] %}
 		<dt>Index Status</dt>
-		<dd>{{ data["index_label"] }}</dd>
+		<dd class="index-flag">{{ data["index_label"] }}</dd>
 	{% endif %}
 
 	<dt>Petition Status</dt>
@@ -45,6 +48,6 @@
 			{% endfor %}
 		</ul>
 	</dd>
-
-
 </dl>
+
+{% endblock %}
