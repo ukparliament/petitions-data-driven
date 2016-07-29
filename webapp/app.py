@@ -4,16 +4,17 @@ import httplib
 import json
 import urllib2
 
-from flask import Flask
-from flask import render_template
+from flask import Flask, render_template, redirect, url_for, request
 from datetime import datetime
 from healthcheck import HealthCheck, EnvironmentDump
+from SPARQLWrapper import SPARQLWrapper, JSON
 
 app = Flask(__name__)
 datadriven_endpoint = os.environ["DATADRIVEN_ENDPOINT"]
+# datadriven_endpoint = "ukpds-data-driven.herokuapp.com"
 
 
-# ====== Health checks ====== #
+#====== Health checks ====== #
 
 health = HealthCheck(app, "/healthcheck")
 envdump = EnvironmentDump(app, "/environment",
@@ -49,7 +50,7 @@ def application_data():
 
 envdump.add_section("application", application_data)
 
-# ====== Routes ====== #
+#====== Routes ====== #
 
 @app.route('/')
 def hello():
@@ -64,6 +65,30 @@ def petitions():
 @app.route('/petitions/<id>')
 def petition(id):
 	return render_template("petitions/show.html", data = __get_json_data("/petitions/{0}.json".format(id)))
+
+@app.route('/petitions/edit/<id>')
+def petition_edit(id):
+	return render_template("petitions/edit.html", petition_data = __get_json_data("/petitions/{0}.json".format(id)), concepts_data = __get_json_data("/concepts.json"))
+
+@app.route('/petitions/update/<id>', methods = ['POST'])
+def petition_update(id):
+	subject_uri = __resource_uri(id)
+
+	if request.form.get('update') == 'add':
+		object_id = request.form.get('add_concepts')
+		object_uri = __resource_uri(object_id)
+		queryStringUpload = "insert {<%s> <http://purl.org/dc/terms/subject> <%s>} WHERE { }" % (subject_uri, object_uri)
+
+	if request.form.get('update') == 'remove':
+		concepts = request.form.getlist('remove_concepts')
+		delete_statements = [ "<%s> <http://purl.org/dc/terms/subject> <%s> . " % (subject_uri, __resource_uri(concept_id)) for concept_id in concepts]
+		queryStringUpload = "delete {" + "".join(delete_statements) + "} WHERE { }"
+
+	sparql = SPARQLWrapper("http://graphdbtest.eastus.cloudapp.azure.com/repositories/DataDriven06/statements")
+	sparql.setQuery(queryStringUpload)
+	sparql.method = 'POST'
+	sparql.query()
+	return redirect(url_for('petition_edit', id = id))
 
 @app.route('/constituencies')
 def constituencies():
@@ -83,6 +108,9 @@ def __get_json_data(url):
 		conn.close()
 
 	return json.loads(repsonse_body)
+
+def __resource_uri(id):
+	return "http://id.ukpds.org/{0}".format(id)
 
 if __name__ == '__main__':
     # Bind to PORT if defined, otherwise default to 5000.

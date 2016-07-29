@@ -1,5 +1,7 @@
 <h1>Petition details</h1>
 
+<h3><a href="{{ url_for('petition_edit', id = data['id']) }}">Edit</a></h3>
+
 <dl>
 	<dt>Title</dt>
 	<dd>{{ data["title"] }}</dd>
@@ -18,6 +20,17 @@
 
 	<dt>Link</dt>
 	<dd><a href="{{ data['external_url'] }}">{{ data['external_url'] }}</a></dd>
+
+	<dt>Concepts</dt>
+	<dd>
+		<ul>
+			{% for concept in data["concepts"] %}
+				<li>
+					{{ concept["label"] }}
+				</li>
+			{% endfor %}
+		</ul>
+	</dd>
 
 	<dt>Constituencies</dt>
 	<dd>

@@ -4,3 +4,4 @@ Werkzeug
 distribute
 wsgiref
 healthcheck
+SPARQLWrapper
