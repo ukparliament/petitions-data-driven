@@ -10,47 +10,47 @@ from healthcheck import HealthCheck, EnvironmentDump
 from SPARQLWrapper import SPARQLWrapper, JSON
 
 app = Flask(__name__)
-# datadriven_endpoint = os.environ["DATADRIVEN_ENDPOINT"]
-datadriven_endpoint = "ukpds-data-driven.herokuapp.com"
+datadriven_endpoint = os.environ["DATADRIVEN_ENDPOINT"]
+# datadriven_endpoint = "ukpds-data-driven.herokuapp.com"
 
 
-# ====== Health checks ====== #
+#====== Health checks ====== #
 
-# health = HealthCheck(app, "/healthcheck")
-# envdump = EnvironmentDump(app, "/environment",
-# 	include_python=False, include_os=False,
-# 	include_process=False, include_config=False)
+health = HealthCheck(app, "/healthcheck")
+envdump = EnvironmentDump(app, "/environment",
+	include_python=False, include_os=False,
+	include_process=False, include_config=False)
 
-# def datadriven_endpoint_available():
-# 	if not datadriven_endpoint:
-# 		return False, "Data driven endpoint has not been configured"
+def datadriven_endpoint_available():
+	if not datadriven_endpoint:
+		return False, "Data driven endpoint has not been configured"
 
-# 	url = "http://" + datadriven_endpoint + "/"
-# 	try:
-# 		resp = urllib2.urlopen(url)
-# 		try:
-# 			code = resp.getcode()
-# 			if code < 400:
-# 				return True, "Endpoint available: " + url
-# 			else:
-# 				return False, "Endpoint " + url + " returned a status code " + code
-# 		finally:
-# 			resp.close()
-# 	except Exception, ex:
-# 		return False, "Endpoint " + url + " threw an exception: " + ex.__repr__()
+	url = "http://" + datadriven_endpoint + "/"
+	try:
+		resp = urllib2.urlopen(url)
+		try:
+			code = resp.getcode()
+			if code < 400:
+				return True, "Endpoint available: " + url
+			else:
+				return False, "Endpoint " + url + " returned a status code " + code
+		finally:
+			resp.close()
+	except Exception, ex:
+		return False, "Endpoint " + url + " threw an exception: " + ex.__repr__()
 
-# health.add_check(datadriven_endpoint_available)
+health.add_check(datadriven_endpoint_available)
 
-# # add your own data to the environment dump
-# def application_data():
-#     return {
-# 		"maintainer": "Parliamentary Digital Service",
-# 		"git_repo": "https://github.com/ukpds/petitions-data-driven"
-# 	}
+# add your own data to the environment dump
+def application_data():
+    return {
+		"maintainer": "Parliamentary Digital Service",
+		"git_repo": "https://github.com/ukpds/petitions-data-driven"
+	}
 
-# envdump.add_section("application", application_data)
+envdump.add_section("application", application_data)
 
-# ====== Routes ====== #
+#====== Routes ====== #
 
 @app.route('/')
 def hello():
@@ -82,9 +82,6 @@ def petition_update(id):
 	if request.form.get('update') == 'remove':
 		concepts = request.form.getlist('remove_concepts')
 		delete_statements = [ "<%s> <http://purl.org/dc/terms/subject> <%s> . " % (subject_uri, __resource_uri(concept_id)) for concept_id in concepts]
-		# for concept in concepts:
-		# 	queryStringUpload = queryStringUpload + "<%s> <http://purl.org/dc/terms/subject> <%s>" % (subject_uri, object_uri)
-		# queryStringUpload = "delete {<%s> <http://purl.org/dc/terms/subject> <%s>} WHERE { }" % (subject_uri, object_uri)
 		queryStringUpload = "delete {" + "".join(delete_statements) + "} WHERE { }"
 
 	sparql = SPARQLWrapper("http://graphdbtest.eastus.cloudapp.azure.com/repositories/DataDriven06/statements")
