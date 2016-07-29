@@ -4,25 +4,34 @@
 <p>{{ petition_data["summary"] }}</p>
 
 <form method="post" action="{{ url_for('petition_update', id = petition_data['id']) }}">
-	Concept: 
-	<select name="add_concepts">
-		{% for concept in concepts_data %}
-			<label for="{{ concept['id'] }}"></label>
-			<option value="{{ concept['id'] }}">{{ concept["label"] }}</option>
-		{% endfor %}
-	</select>
-	<button name="update" value="add">Add</button>
-	<ul>
-		{% for concept in petition_data['concepts']%}
-			<li>
-				<label for="{{ concept['id'] }}">{{ concept['label'] }}</label>
-				<input id="{{ concept['id'] }}" name="remove_concepts" type="checkbox" value="{{ concept['id'] }}">
-			</li>	
-		{% endfor %}
-	</ul>
-	<button name="update" value="remove">Remove</button>
-	
+	<div class="indexed-section">
+		<label for="indexed">Indexed</label>
+		<input name="index-checkbox" type="checkbox" value="indexed" {% if petition_data['index_label'] == 'indexed' %} checked='checked' {% endif %}>
+		<button name="update" value="index">Update</button>
+	</div>
 
+	<div class="add-concept-section">
+		Concept: 
+		<select name="add_concepts">
+			{% for concept in concepts_data %}
+				<label for="{{ concept['id'] }}"></label>
+				<option value="{{ concept['id'] }}">{{ concept['label'] }}</option>
+			{% endfor %}
+		</select>
+		<button name="update" value="add">Add</button>
+	</div>
+	
+	<div class="remove-concept-section">
+		<ul>
+			{% for concept in petition_data['concepts']%}
+				<li>
+					<label for="{{ concept['id'] }}">{{ concept['label'] }}</label>
+					<input id="{{ concept['id'] }}" name="remove_concepts" type="checkbox" value="{{ concept['id'] }}">
+				</li>	
+			{% endfor %}
+		</ul>
+		<button name="update" value="remove">Remove</button>
+	</div>
 </form>
 
 <a href="{{ url_for('petition', id = petition_data['id']) }}">Back to petition detail page</a>

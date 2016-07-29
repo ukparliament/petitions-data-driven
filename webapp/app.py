@@ -10,45 +10,45 @@ from healthcheck import HealthCheck, EnvironmentDump
 from SPARQLWrapper import SPARQLWrapper, JSON
 
 app = Flask(__name__)
-datadriven_endpoint = os.environ["DATADRIVEN_ENDPOINT"]
-# datadriven_endpoint = "ukpds-data-driven.herokuapp.com"
+# datadriven_endpoint = os.environ["DATADRIVEN_ENDPOINT"]
+datadriven_endpoint = "ukpds-data-driven.herokuapp.com"
 
 
 #====== Health checks ====== #
 
-health = HealthCheck(app, "/healthcheck")
-envdump = EnvironmentDump(app, "/environment",
-	include_python=False, include_os=False,
-	include_process=False, include_config=False)
+# health = HealthCheck(app, "/healthcheck")
+# envdump = EnvironmentDump(app, "/environment",
+# 	include_python=False, include_os=False,
+# 	include_process=False, include_config=False)
 
-def datadriven_endpoint_available():
-	if not datadriven_endpoint:
-		return False, "Data driven endpoint has not been configured"
+# def datadriven_endpoint_available():
+# 	if not datadriven_endpoint:
+# 		return False, "Data driven endpoint has not been configured"
 
-	url = "http://" + datadriven_endpoint + "/"
-	try:
-		resp = urllib2.urlopen(url)
-		try:
-			code = resp.getcode()
-			if code < 400:
-				return True, "Endpoint available: " + url
-			else:
-				return False, "Endpoint " + url + " returned a status code " + code
-		finally:
-			resp.close()
-	except Exception, ex:
-		return False, "Endpoint " + url + " threw an exception: " + ex.__repr__()
+# 	url = "http://" + datadriven_endpoint + "/"
+# 	try:
+# 		resp = urllib2.urlopen(url)
+# 		try:
+# 			code = resp.getcode()
+# 			if code < 400:
+# 				return True, "Endpoint available: " + url
+# 			else:
+# 				return False, "Endpoint " + url + " returned a status code " + code
+# 		finally:
+# 			resp.close()
+# 	except Exception, ex:
+# 		return False, "Endpoint " + url + " threw an exception: " + ex.__repr__()
 
-health.add_check(datadriven_endpoint_available)
+# health.add_check(datadriven_endpoint_available)
 
-# add your own data to the environment dump
-def application_data():
-    return {
-		"maintainer": "Parliamentary Digital Service",
-		"git_repo": "https://github.com/ukpds/petitions-data-driven"
-	}
+# # add your own data to the environment dump
+# def application_data():
+#     return {
+# 		"maintainer": "Parliamentary Digital Service",
+# 		"git_repo": "https://github.com/ukpds/petitions-data-driven"
+# 	}
 
-envdump.add_section("application", application_data)
+# envdump.add_section("application", application_data)
 
 #====== Routes ====== #
 
@@ -77,12 +77,15 @@ def petition_update(id):
 	if request.form.get('update') == 'add':
 		object_id = request.form.get('add_concepts')
 		object_uri = __resource_uri(object_id)
-		queryStringUpload = "insert {<%s> <http://purl.org/dc/terms/subject> <%s>} WHERE { }" % (subject_uri, object_uri)
+		queryStringUpload = index_status_string + "insert {<%s> <http://purl.org/dc/terms/subject> <%s>} WHERE { }" % (subject_uri, object_uri)
 
 	if request.form.get('update') == 'remove':
 		concepts = request.form.getlist('remove_concepts')
 		delete_statements = [ "<%s> <http://purl.org/dc/terms/subject> <%s> . " % (subject_uri, __resource_uri(concept_id)) for concept_id in concepts]
-		queryStringUpload = "delete {" + "".join(delete_statements) + "} WHERE { }"
+		queryStringUpload = index_status_string + "delete {" + "".join(delete_statements) + "} WHERE { }"
+
+	if request.form.get('update') == 'index':
+		queryStringUpload = __update_index_status(request.form.get('index-checkbox'), subject_uri)
 
 	sparql = SPARQLWrapper("http://graphdbtest.eastus.cloudapp.azure.com/repositories/DataDriven06/statements")
 	sparql.setQuery(queryStringUpload)
@@ -97,6 +100,12 @@ def constituencies():
 @app.route('/constituencies/<id>')
 def constituency(id):
 	return render_template("constituencies/show.html", data = __get_json_data("/constituencies/{0}.json".format(id)), endpoint = datadriven_endpoint)
+
+def __update_index_status(checkbox_status, subject_uri):
+	if checkbox_status == 'indexed':
+		return "insert {<%s> <http://data.parliament.uk/schema/parl#indexed> 'indexed'} WHERE { } " % (subject_uri)
+	else:
+		return "delete {<%s> <http://data.parliament.uk/schema/parl#indexed> 'indexed'} WHERE { } " % (subject_uri)
 
 def __get_json_data(url):
 	conn = httplib.HTTPConnection(datadriven_endpoint)

@@ -20,4 +20,5 @@ services:
       - "traefik.backend=petitions-data-driven"
       - "traefik.frontend.rule=Host:petitions-data-driven.docker.localhost"
     environment:
-      DATADRIVEN_ENDPOINT: data-driven.ci.ukpds.org
+      DATADRIVEN_ENDPOINT: ukpds-data-driven.herokuapp.com
+      # DATADRIVEN_ENDPOINT: data-driven.ci.ukpds.org
