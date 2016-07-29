@@ -4,6 +4,10 @@
 <p>{{ petition_data["summary"] }}</p>
 
 <form method="post" action="{{ url_for('petition_update', id = petition_data['id']) }}">
+	<label for="indexed">Indexed</label>
+	<input name="indexed" type="checkbox">
+	<button name="update" value="indexed">Update</button>
+
 	Concept: 
 	<select name="add_concepts">
 		{% for concept in concepts_data %}

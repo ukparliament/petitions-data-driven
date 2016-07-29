@@ -8,8 +8,13 @@
 
 	<dt>Summary</dt>
 	<dd>{{ data["summary"] }}</dd>
+	
+	{% if data['index_label'] %}
+		<dt>Index Status</dt>
+		<dd>{{ data["index_label"] }}</dd>
+	{% endif %}
 
-	<dt>Status</dt>
+	<dt>Petition Status</dt>
 	<dd>{{ data["status"] }}</dd>
 
 	<dt>Created</dt>
