@@ -4,50 +4,51 @@ import httplib
 import json
 import urllib2
 
-from flask import Flask
-from flask import render_template
+from flask import Flask, render_template, redirect, url_for
 from datetime import datetime
 from healthcheck import HealthCheck, EnvironmentDump
+from SPARQLWrapper import SPARQLWrapper, JSON
 
 app = Flask(__name__)
-datadriven_endpoint = os.environ["DATADRIVEN_ENDPOINT"]
+# datadriven_endpoint = os.environ["DATADRIVEN_ENDPOINT"]
+datadriven_endpoint = "data-driven.ci.ukpds.org"
 
 
 # ====== Health checks ====== #
 
-health = HealthCheck(app, "/healthcheck")
-envdump = EnvironmentDump(app, "/environment",
-	include_python=False, include_os=False,
-	include_process=False, include_config=False)
+# health = HealthCheck(app, "/healthcheck")
+# envdump = EnvironmentDump(app, "/environment",
+# 	include_python=False, include_os=False,
+# 	include_process=False, include_config=False)
 
-def datadriven_endpoint_available():
-	if not datadriven_endpoint:
-		return False, "Data driven endpoint has not been configured"
+# def datadriven_endpoint_available():
+# 	if not datadriven_endpoint:
+# 		return False, "Data driven endpoint has not been configured"
 
-	url = "http://" + datadriven_endpoint + "/"
-	try:
-		resp = urllib2.urlopen(url)
-		try:
-			code = resp.getcode()
-			if code < 400:
-				return True, "Endpoint available: " + url
-			else:
-				return False, "Endpoint " + url + " returned a status code " + code
-		finally:
-			resp.close()
-	except Exception, ex:
-		return False, "Endpoint " + url + " threw an exception: " + ex.__repr__()
+# 	url = "http://" + datadriven_endpoint + "/"
+# 	try:
+# 		resp = urllib2.urlopen(url)
+# 		try:
+# 			code = resp.getcode()
+# 			if code < 400:
+# 				return True, "Endpoint available: " + url
+# 			else:
+# 				return False, "Endpoint " + url + " returned a status code " + code
+# 		finally:
+# 			resp.close()
+# 	except Exception, ex:
+# 		return False, "Endpoint " + url + " threw an exception: " + ex.__repr__()
 
-health.add_check(datadriven_endpoint_available)
+# health.add_check(datadriven_endpoint_available)
 
-# add your own data to the environment dump
-def application_data():
-    return {
-		"maintainer": "Parliamentary Digital Service",
-		"git_repo": "https://github.com/ukpds/petitions-data-driven"
-	}
+# # add your own data to the environment dump
+# def application_data():
+#     return {
+# 		"maintainer": "Parliamentary Digital Service",
+# 		"git_repo": "https://github.com/ukpds/petitions-data-driven"
+# 	}
 
-envdump.add_section("application", application_data)
+# envdump.add_section("application", application_data)
 
 # ====== Routes ====== #
 
@@ -64,6 +65,19 @@ def petitions():
 @app.route('/petitions/<id>')
 def petition(id):
 	return render_template("petitions/show.html", data = __get_json_data("/petitions/{0}.json".format(id)))
+
+@app.route('/petitions/edit/<id>')
+def petition_edit(id):
+	return render_template("petitions/edit.html", petition_data = __get_json_data("/petitions/{0}.json".format(id)), concepts_data = __get_json_data("/concepts.json"))
+
+@app.route('/petitions/update/<id>', methods = ['POST'])
+def petition_update(id):
+	queryStringUpload = "insert {<http://id.ukpds.org/23a6596b-bc6c-4577-a9d7-0670fcdfe180> <http://purl.org/dc/terms/subject> <http://id.ukpds.org/00091072-0000-0000-0000-000000000002>} WHERE { }"
+	sparql = SPARQLWrapper("http://graphdbtest.eastus.cloudapp.azure.com/repositories/DataDriven06/statements")
+	sparql.setQuery(queryStringUpload)
+	sparql.method = 'POST'
+	sparql.query()
+	return redirect(url_for('petition_edit', id = id))
 
 @app.route('/constituencies')
 def constituencies():

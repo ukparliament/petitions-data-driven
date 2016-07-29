@@ -1,0 +1,13 @@
+<h1>Edit Petition</h1>
+
+<form method="post" action="{{ url_for('petition_update', id = petition_data['id']) }}">
+	Concept: 
+	<select>
+		{% for concept in concepts_data %}
+		<label for = "{{ concept['id'] }}"></label>
+		<option>{{ concept["label"] }}</option>
+		{% endfor %}
+	</select>
+	<button name = "Add">Add</button>
+</form>
+
