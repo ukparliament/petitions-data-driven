@@ -56,7 +56,10 @@ datadriven_endpoint = "ukpds-data-driven.herokuapp.com"
 def hello():
     provider = str(os.environ.get('PROVIDER', 'world'))
     return 'Hello '+provider+'!'
-print(socket.gethostname())
+
+@app.route('/concepts/<id>/petitions')
+def petitions_by_concepts(id):
+	return render_template("petitions/index_by_concept.html", data = __get_json_data("/concepts/{0}/petitions.json".format(id)))
 
 @app.route('/petitions')
 def petitions():

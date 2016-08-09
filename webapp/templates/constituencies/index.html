@@ -1,3 +1,6 @@
+{% extends "layout.html" %}
+{% block body %}
+
 <h1>Constituencies</h1>
 
 <ul>
@@ -5,3 +8,5 @@
 	<li><a href="{{ url_for('constituency', id = constituency['id']) }}">{{ constituency["constituency_label"] }}</a></li>
 	{% endfor %}
 </ul>
+
+{% endblock %}

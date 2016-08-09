@@ -1,6 +1,11 @@
 <!doctype html>
-<title>Data-Driven</title>
-<link rel=stylesheet type=text/css href="{{ url_for('static', filename='style.css') }}">
-<div class=page>
-  {% block body %}{% endblock %}
-</div>
+	<head>
+		<title>Data-Driven</title>
+		<link rel=stylesheet type=text/css href="{{ url_for('static', filename='style.css') }}">
+	</head>
+	
+	<div class="content">
+		<a href="http://ukpds-data-driven.herokuapp.com">Home</a>
+		{% block body %}{% endblock %}
+	</div>
+</html>
