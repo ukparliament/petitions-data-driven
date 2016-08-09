@@ -1,4 +1,9 @@
+{% extends "layout.html" %}
+{% block body %}
+
 <h1>Petition details</h1>
+
+<h3><a href="{{ url_for('petition_edit', id = data['id']) }}">Edit</a></h3>
 
 <dl>
 	<dt>Title</dt>
@@ -6,8 +11,13 @@
 
 	<dt>Summary</dt>
 	<dd>{{ data["summary"] }}</dd>
+	
+	{% if data['index_label'] %}
+		<dt>Index Status</dt>
+		<dd class="index-flag">{{ data["index_label"] }}</dd>
+	{% endif %}
 
-	<dt>Status</dt>
+	<dt>Petition Status</dt>
 	<dd>{{ data["status"] }}</dd>
 
 	<dt>Created</dt>
@@ -19,6 +29,17 @@
 	<dt>Link</dt>
 	<dd><a href="{{ data['external_url'] }}">{{ data['external_url'] }}</a></dd>
 
+	<dt>Concepts</dt>
+	<dd>
+		<ul>
+			{% for concept in data["concepts"] %}
+				<li>
+					<a href="http://{{ endpoint }}/concepts/{{ concept['id'] }}">{{ concept["label"] }}</a>
+				</li>
+			{% endfor %}
+		</ul>
+	</dd>
+
 	<dt>Constituencies</dt>
 	<dd>
 		<ul>
@@ -27,6 +48,6 @@
 			{% endfor %}
 		</ul>
 	</dd>
-
-
 </dl>
+
+{% endblock %}

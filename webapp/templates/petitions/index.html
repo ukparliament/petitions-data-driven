@@ -1,7 +1,15 @@
-<h1>Petitions</h1>
+{% extends "layout.html" %}
+{% block body %}
 
-<ul>
-	{% for petition in data %}
-	<li><a href="{{ url_for('petition', id = petition['id']) }}">{{ petition["title"] }}</a></li>
-	{% endfor %}
-</ul>
+	<h1>Petitions</h1>	
+	<ul>
+		{% for petition in data %}
+		<li>
+			<a href="{{ url_for('petition', id = petition['id']) }}">{{ petition["title"] }}</a>
+			{% if petition["index_label"] %}
+				- <span class="index-flag">Indexed</span>
+			{% endif %}
+		</li>
+		{% endfor %}
+	</ul>
+{% endblock %}
