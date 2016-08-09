@@ -34,7 +34,7 @@
 		<ul>
 			{% for concept in data["concepts"] %}
 				<li>
-					{{ concept["label"] }}
+					<a href="http://{{ endpoint }}/concepts/{{ concept['id'] }}">{{ concept["label"] }}</a>
 				</li>
 			{% endfor %}
 		</ul>
