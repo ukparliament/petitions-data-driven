@@ -12,9 +12,11 @@
 	<dt>Summary</dt>
 	<dd>{{ data["summary"] }}</dd>
 	
+	<dt>Index Status</dt>
 	{% if data['index_label'] %}
-		<dt>Index Status</dt>
 		<dd class="index-flag">{{ data["index_label"] }}</dd>
+	{% else %}
+		<dd class="index-flag">Requires indexing</dd>
 	{% endif %}
 
 	<dt>Petition Status</dt>

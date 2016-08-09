@@ -1,0 +1,14 @@
+{% if not data['petitions'] %}
+	<p>No petitions</p>
+{% else %}
+	<ul>
+		{% for petition in data['petitions'] %}
+		<li>
+			<a href="{{ url_for('petition', id = petition['id']) }}">{{ petition["title"] }}</a>
+			{% if petition["index_label"] %}
+				- <span class="index-flag">Indexed</span>
+			{% endif %}
+		</li>
+		{% endfor %}
+	</ul>
+{% endif %}
