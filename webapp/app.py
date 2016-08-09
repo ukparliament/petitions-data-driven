@@ -77,12 +77,12 @@ def petition_update(id):
 	if request.form.get('update') == 'add':
 		object_id = request.form.get('add_concepts')
 		object_uri = __resource_uri(object_id)
-		queryStringUpload = index_status_string + "insert {<%s> <http://purl.org/dc/terms/subject> <%s>} WHERE { }" % (subject_uri, object_uri)
+		queryStringUpload = "insert {<%s> <http://purl.org/dc/terms/subject> <%s>} WHERE { }" % (subject_uri, object_uri)
 
 	if request.form.get('update') == 'remove':
 		concepts = request.form.getlist('remove_concepts')
 		delete_statements = [ "<%s> <http://purl.org/dc/terms/subject> <%s> . " % (subject_uri, __resource_uri(concept_id)) for concept_id in concepts]
-		queryStringUpload = index_status_string + "delete {" + "".join(delete_statements) + "} WHERE { }"
+		queryStringUpload = "delete {" + "".join(delete_statements) + "} WHERE { }"
 
 	if request.form.get('update') == 'index':
 		queryStringUpload = __update_index_status(request.form.get('index-checkbox'), subject_uri)
