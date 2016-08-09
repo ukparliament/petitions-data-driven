@@ -64,7 +64,7 @@ def petitions():
 
 @app.route('/petitions/<id>')
 def petition(id):
-	return render_template("petitions/show.html", data = __get_json_data("/petitions/{0}.json".format(id)))
+	return render_template("petitions/show.html", data = __get_json_data("/petitions/{0}.json".format(id)), endpoint = datadriven_endpoint)
 
 @app.route('/petitions/edit/<id>')
 def petition_edit(id):
