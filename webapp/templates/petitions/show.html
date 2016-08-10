@@ -34,7 +34,7 @@
 	<dt>Concepts</dt>
 	<dd>
 		<ul>
-			{% for concept in data["concepts"] %}
+			{% for concept in data["concepts"]|sort(attribute='label') %}
 				<li>
 					<a href="http://{{ endpoint }}/concepts/{{ concept['id'] }}">{{ concept["label"] }}</a>
 				</li>
@@ -46,7 +46,7 @@
 	<dd>
 		<ul>
 			{% for constituency in data["constituencies"] %}
-			<li><a href="{{ url_for('constituency', id = constituency['id']) }}">{{ constituency["constituency_label"] }} ({{ constituency["number_of_signatures"] }})</a></li>
+				<li><a href="{{ url_for('constituency', id = constituency['id']) }}">{{ constituency["constituency_label"] }} ({{ constituency["number_of_signatures"] }})</a></li>
 			{% endfor %}
 		</ul>
 	</dd>
